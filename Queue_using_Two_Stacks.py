@@ -47,22 +47,27 @@ class Queue:
         self.stack2 = Stack()
         
     def enqueue(self, data):
-        if not self.stack1.head:
+        if not self.stack1.head and not self.stack2.head:
             self.head = Node(data)
         self.stack1.push(data)
         
     def dequeue(self):
-        #print("Here")
-        while self.stack1.head:
-            self.stack2.push(self.stack1.pop())
+        if self.stack2.head:
+            res = self.stack2.pop()        
+        else:
+            while self.stack1.head:
+                self.stack2.push(self.stack1.pop())
+            res = self.stack2.pop()
+    
+        if self.stack2.head:
+            self.head = self.stack2.head
+        elif self.stack1:
+            while self.stack1.head:
+                self.stack2.push(self.stack1.pop())
+            self.head = self.stack2.head
+        else:
+            self.head = None
         
-        res = self.stack2.pop()
-        #print(res)
-        self.head = self.stack2.head
-        
-        while self.stack2.head:
-            self.stack1.push(self.stack2.pop())
-            
         return res
     
 queue = Queue()
@@ -79,4 +84,54 @@ for _ in range(int(input())):
                 print(queue.head.data)
             else:
                 print(None)
+         
+                
+#Alternative
+class Queue:
+    def __init__(self):
+        self.head = None
+        self.stack1 = []
+        self.stack2 = []
+        
+    def enqueue(self, data):
+        if not self.stack1 and not self.stack2:
+            self.head = data
+        self.stack1.append(data)
+        
+    def dequeue(self):
+        if self.stack2:
+            res = self.stack2.pop()        
+        else:
+            while self.stack1:
+                self.stack2.append(self.stack1.pop())
             
+            res = self.stack2.pop()
+    
+        if self.stack2:
+            self.head = self.stack2[-1]
+        elif self.stack1:
+            self.head = self.stack1[0]
+        else:
+            self.head = None
+            
+        """
+        while self.stack2:
+            self.stack1.append(self.stack2.pop())
+            """
+            
+        return res
+    
+queue = Queue()
+for _ in range(int(input())):
+    q = input()
+    if " " in q:
+        if q.split()[0] == "1":
+            queue.enqueue(q.split()[1])
+    else:
+        if q == "2":
+            queue.dequeue()
+        if q == "3":
+            if queue.head:
+                print(queue.head)
+            else:
+                print(None)
